@@ -257,6 +257,22 @@ static inline int freezable_schedule_hrtimeout_range(ktime_t *expires,
 	__retval;							\
 })
 
+#define wait_fatal_freezable(wq, condition, exclusive)			\
+({									\
+	int __ret = 0;							\
+	do {								\
+		if (exclusive)						\
+			__ret = wait_event_interruptible_exclusive(wq,	\
+							condition);	\
+		else							\
+			__ret = wait_event_interruptible(wq,		\
+							condition);	\
+		if (!__ret || fatal_signal_pending(current))		\
+			break;						\
+	} while (try_to_freeze());					\
+	__ret;								\
+})
+
 #else /* !CONFIG_FREEZER */
 static inline bool frozen(struct task_struct *p) { return false; }
 static inline bool freezing(struct task_struct *p) { return false; }
@@ -296,6 +312,16 @@ static inline void set_freezable(void) {}
 
 #define wait_event_freezekillable_unsafe(wq, condition)			\
 		wait_event_killable(wq, condition)
+
+#define wait_fatal_freezable(wq, condition, exclusive)			\
+({									\
+	int __ret = 0;							\
+	if (exclusive)							\
+		__ret = wait_event_killable_exclusive(wq, condition);	\
+	else								\
+		__ret = wait_event_killable(wq,	condition);		\
+	__ret;								\
+})
 
 #endif /* !CONFIG_FREEZER */
 
