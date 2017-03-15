@@ -1989,6 +1989,23 @@ static int btusb_recv_event_intel(struct hci_dev *hdev, struct sk_buff *skb)
 				break;
 			}
 		}
+	} else if (skb->len > HCI_EVENT_HDR_SIZE) {
+		struct hci_event_hdr *hdr;
+
+		hdr = (struct hci_event_hdr *) skb->data;
+
+		if (hdr->evt == HCI_EV_CMD_COMPLETE) {
+			struct hci_ev_cmd_complete *cmd_complete;
+
+			cmd_complete =
+				(struct hci_ev_cmd_complete *) (skb->data + HCI_EVENT_HDR_SIZE);
+			cmd_complete->ncmd = 1;
+		} else if (hdr->evt == HCI_EV_CMD_STATUS) {
+			struct hci_ev_cmd_status *cmd_status;
+
+			cmd_status = (struct hci_ev_cmd_status *) (skb->data + HCI_EVENT_HDR_SIZE);
+			cmd_status->ncmd = 1;
+		}
 	}
 
 	return hci_recv_frame(hdev, skb);
