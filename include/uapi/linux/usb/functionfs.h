@@ -289,5 +289,6 @@ struct usb_functionfs_event {
 					     struct usb_endpoint_descriptor)
 
 
+#define FLUSH_DBC_EP	_IO('f',1)
 
 #endif /* _UAPI__LINUX_FUNCTIONFS_H__ */
