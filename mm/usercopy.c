@@ -277,14 +277,15 @@ void __check_object_size(const void *ptr, unsigned long n, bool to_user)
 		 */
 		return;
 	default:
-		usercopy_abort("process stack", NULL, to_user, 0, n);
+		//usercopy_abort("process stack", NULL, to_user, 0, n);
+		break;
 	}
 
 	/* Check for bad heap object. */
 	check_heap_object(ptr, n, to_user);
 
 	/* Check for object in kernel to avoid text exposure. */
-	check_kernel_text_object((const unsigned long)ptr, n, to_user);
+	//check_kernel_text_object((const unsigned long)ptr, n, to_user);
 }
 EXPORT_SYMBOL(__check_object_size);
 
