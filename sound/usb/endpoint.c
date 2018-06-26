@@ -986,6 +986,7 @@ int snd_usb_endpoint_start(struct snd_usb_endpoint *ep)
 			usb_audio_err(ep->chip,
 				"cannot submit urb %d, error %d: %s\n",
 				i, err, usb_error_string(err));
+			mdelay(100);
 			goto __error;
 		}
 		set_bit(i, &ep->active_mask);
