@@ -225,6 +225,7 @@ void azx_stop_chip(struct azx *chip);
 #define azx_enter_link_reset(chip) \
 	snd_hdac_bus_enter_link_reset(azx_bus(chip))
 irqreturn_t azx_interrupt(int irq, void *dev_id);
+irqreturn_t azx_threaded_handler(int irq, void *dev_id);
 
 /* Codec interface */
 int azx_bus_init(struct azx *chip, const char *model,
