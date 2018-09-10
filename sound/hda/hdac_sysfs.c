@@ -10,6 +10,13 @@
 #include <sound/hdaudio.h>
 #include "local.h"
 
+#define DMA_TEST
+#ifdef DMA_TEST
+extern struct device_attribute dev_attr_lk_phys_addr;
+extern struct device_attribute dev_attr_bdl_hack;
+extern struct device_attribute dev_attr_vmm_check_res;
+#endif
+
 struct hdac_widget_tree {
 	struct kobject *root;
 	struct kobject *afg;
@@ -56,6 +63,11 @@ static DEVICE_ATTR_RO(modalias);
 static struct attribute *hdac_dev_attrs[] = {
 	&dev_attr_type.attr,
 	&dev_attr_vendor_id.attr,
+#ifdef DMA_TEST
+	&dev_attr_lk_phys_addr.attr,
+	&dev_attr_bdl_hack.attr,
+	&dev_attr_vmm_check_res.attr,
+#endif
 	&dev_attr_subsystem_id.attr,
 	&dev_attr_revision_id.attr,
 	&dev_attr_afg.attr,
