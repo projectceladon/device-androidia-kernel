@@ -26,6 +26,10 @@
 #define SW_IDPIN_EN			BIT(21)
 #define SW_IDPIN			BIT(20)
 
+#define SW_SWITCH_EN_CFG0		BIT(16)
+#define SW_DRD_STATIC_HOST_CFG0		1
+#define SW_DRD_STATIC_DEV_CFG0		2
+
 #define DUAL_ROLE_CFG1			0x6c
 #define HOST_MODE			BIT(29)
 
@@ -83,17 +87,22 @@ static int intel_xhci_usb_set_role(struct device *dev, enum usb_role role)
 	case USB_ROLE_NONE:
 		val |= SW_IDPIN;
 		val &= ~SW_VBUS_VALID;
+                val &= ~(SW_DRD_STATIC_DEV_CFG0 | SW_DRD_STATIC_HOST_CFG0);
 		break;
 	case USB_ROLE_HOST:
 		val &= ~SW_IDPIN;
 		val &= ~SW_VBUS_VALID;
+		val &= ~SW_DRD_STATIC_DEV_CFG0;
+		val |= SW_DRD_STATIC_HOST_CFG0;
 		break;
 	case USB_ROLE_DEVICE:
 		val |= SW_IDPIN;
 		val |= SW_VBUS_VALID;
+		val &= ~SW_DRD_STATIC_HOST_CFG0;
+		val |= SW_DRD_STATIC_DEV_CFG0;
 		break;
 	}
-	val |= SW_IDPIN_EN;
+	val |= SW_IDPIN_EN | SW_SWITCH_EN_CFG0 ;
 
 	writel(val, data->base + DUAL_ROLE_CFG0);
 
