@@ -213,7 +213,8 @@ static void xhci_pci_quirks(struct device *dev, struct xhci_hcd *xhci)
 		xhci->quirks |= XHCI_MISSING_CAS;
 	if (pdev->vendor == PCI_VENDOR_ID_INTEL &&
 	    (pdev->device == PCI_DEVICE_ID_INTEL_CHERRYVIEW_XHCI ||
-	     pdev->device == PCI_DEVICE_ID_INTEL_APL_XHCI) &&
+             pdev->device == PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_XHCI ||
+             pdev->device == PCI_DEVICE_ID_INTEL_APL_XHCI) &&
 	     xhci_pci_board_has_udc())
 		xhci->quirks |= XHCI_INTEL_USB_ROLE_SW;
 
