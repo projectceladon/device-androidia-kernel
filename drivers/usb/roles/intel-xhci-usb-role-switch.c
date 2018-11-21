@@ -195,6 +195,22 @@ static int intel_xhci_usb_remove(struct platform_device *pdev)
 	return 0;
 }
 
+static int intel_xhci_usb_suspend(struct platform_device *pdev)
+{
+        struct device *dev = &pdev->dev;
+        intel_xhci_usb_set_role(dev, USB_ROLE_HOST);
+
+        return 0;
+}
+
+static int intel_xhci_usb_resume(struct platform_device *pdev)
+{
+        struct device *dev = &pdev->dev;
+        intel_xhci_usb_set_role(dev, USB_ROLE_DEVICE);
+
+        return 0;
+}
+
 static const struct platform_device_id intel_xhci_usb_table[] = {
 	{ .name = DRV_NAME },
 	{}
@@ -208,6 +224,8 @@ static struct platform_driver intel_xhci_usb_driver = {
 	.id_table = intel_xhci_usb_table,
 	.probe = intel_xhci_usb_probe,
 	.remove = intel_xhci_usb_remove,
+	.suspend = intel_xhci_usb_suspend,
+	.resume = intel_xhci_usb_resume,
 };
 
 module_platform_driver(intel_xhci_usb_driver);
