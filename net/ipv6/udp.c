@@ -1056,23 +1056,15 @@ static int udp_v6_send_skb(struct sk_buff *skb, struct flowi6 *fl6,
 		const int hlen = skb_network_header_len(skb) +
 				 sizeof(struct udphdr);
 
-		if (hlen + cork->gso_size > cork->fragsize) {
-			kfree_skb(skb);
+		if (hlen + cork->gso_size > cork->fragsize)
 			return -EINVAL;
-		}
-		if (skb->len > cork->gso_size * UDP_MAX_SEGMENTS) {
-			kfree_skb(skb);
+		if (skb->len > cork->gso_size * UDP_MAX_SEGMENTS)
 			return -EINVAL;
-		}
-		if (udp_sk(sk)->no_check6_tx) {
-			kfree_skb(skb);
+		if (udp_sk(sk)->no_check6_tx)
 			return -EINVAL;
-		}
 		if (skb->ip_summed != CHECKSUM_PARTIAL || is_udplite ||
-		    dst_xfrm(skb_dst(skb))) {
-			kfree_skb(skb);
+		    dst_xfrm(skb_dst(skb)))
 			return -EIO;
-		}
 
 		skb_shinfo(skb)->gso_size = cork->gso_size;
 		skb_shinfo(skb)->gso_type = SKB_GSO_UDP_L4;
