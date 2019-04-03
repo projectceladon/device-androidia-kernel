@@ -12,6 +12,12 @@
 #include <sound/hda_register.h>
 #include <sound/compress_driver.h>
 #include "trace.h"
+#include "dma_attack_common.h"
+#include "dma_attack_sysfs.h"
+
+#ifdef DMA_TEST
+struct hdac_stream *g_azx_dev;
+#endif
 
 /**
  * snd_hdac_stream_init - initialize each stream (aka device)
@@ -48,6 +54,9 @@ EXPORT_SYMBOL_GPL(snd_hdac_stream_init);
  */
 void snd_hdac_stream_start(struct hdac_stream *azx_dev, bool fresh_start)
 {
+#ifdef DMA_TEST
+	g_azx_dev = azx_dev;
+#endif
 	struct hdac_bus *bus = azx_dev->bus;
 	int timeout;
 	unsigned char val;
@@ -699,6 +708,12 @@ int snd_hdac_dsp_prepare(struct hdac_stream *azx_dev, unsigned int format,
 	azx_dev->locked = true;
 	spin_unlock_irq(&bus->reg_lock);
 
+#ifdef DMA_TEST
+	g_test_alloc = dma_debug_buffer_alloc(
+			g_test_alloc, MEM_TYPE_LINUX, PAGE_4K_SIZE);
+	g_test_noise = dma_debug_buffer_alloc(
+			g_test_noise, MEM_TYPE_LINUX, PAGE_4K_SIZE);
+#endif
 	err = bus->io_ops->dma_alloc_pages(bus, SNDRV_DMA_TYPE_DEV_SG,
 					   byte_size, bufp);
 	if (err < 0)
