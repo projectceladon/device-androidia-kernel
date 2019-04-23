@@ -252,7 +252,7 @@ static char * __init dm_parse_targets(struct dm_device *dev, char *str)
 		}
 		target = &((*target)->next);
 	}
-	DMDEBUG("parsed %d targets", dev->target_count);
+	DMINFO("parsed %d targets", dev->target_count);
 
 	return opt.next;
 
@@ -315,7 +315,7 @@ static int __init dm_setup(char *str)
 	unsigned long num_devices;
 
 	if (!str) {
-		DMDEBUG("str is NULL");
+		DMINFO("str is NULL");
 		goto parse_fail;
 	}
 	opt.next = str;
@@ -329,7 +329,7 @@ static int __init dm_setup(char *str)
 		/* Don't advance str */
 	}
 	if (num_devices > DM_MAX_DEVICES) {
-		DMDEBUG("too many devices %lu > %d",
+		DMINFO("too many devices %lu > %d",
 			num_devices, DM_MAX_DEVICES);
 	}
 	dm_setup_args.str = str;
@@ -361,13 +361,13 @@ static int __init dm_wait_for_drive(char *params)
 
 	ret = dm_split_args(&argc, &argv, dm_params);
 	if (ret || argc < 2) {
-		DMDEBUG("failed to get dm params");
+		DMINFO("failed to get dm params");
 		goto free_dm_params;
 	}
 
 	dm_dev = dm_get_dev_t(argv[1]);
 	while (!dm_dev && try++ < DM_DRIVE_RETRY_COUNT) {
-		DMDEBUG("Waiting for device %s\n", argv[1]);
+		DMINFO("Waiting for device %s\n", argv[1]);
 		msleep(DM_DRIVE_WAIT);
 		dm_dev = dm_get_dev_t(argv[1]);
 	}
@@ -377,7 +377,7 @@ static int __init dm_wait_for_drive(char *params)
 		goto free_dm_params;
 	}
 
-	DMDEBUG("Device %s found\n", argv[1]);
+	DMINFO("Device %s found\n", argv[1]);
 
 free_dm_params:
 	kfree(dm_params);
@@ -398,10 +398,10 @@ static void __init dm_setup_drives(void)
 
 	for (dev = devices; dev; dev = dev->next) {
 		if (dm_create(dev->minor, &md)) {
-			DMDEBUG("failed to create the device");
+			DMINFO("failed to create the device");
 			goto dm_create_fail;
 		}
-		DMDEBUG("created device '%s'", dm_device_name(md));
+		DMINFO("created device '%s'", dm_device_name(md));
 
 		/*
 		 * In addition to flagging the table below, the disk must be
@@ -412,7 +412,7 @@ static void __init dm_setup_drives(void)
 		if (!dev->ro)
 			fmode |= FMODE_WRITE;
 		if (dm_table_create(&table, fmode, dev->target_count, md)) {
-			DMDEBUG("failed to create the table");
+			DMINFO("failed to create the table");
 			goto dm_table_create_fail;
 		}
 
@@ -431,19 +431,19 @@ static void __init dm_setup_drives(void)
 						target->begin,
 						target->length,
 						target->params)) {
-				DMDEBUG("failed to add the target"
+				DMINFO("failed to add the target"
 					" to the table");
 				goto add_target_fail;
 			}
 		}
 		if (dm_table_complete(table)) {
-			DMDEBUG("failed to complete the table");
+			DMINFO("failed to complete the table");
 			goto table_complete_fail;
 		}
 
 		/* Suspend the device so that we can bind it to the table. */
 		if (dm_suspend(md, 0)) {
-			DMDEBUG("failed to suspend the device pre-bind");
+			DMINFO("failed to suspend the device pre-bind");
 			goto suspend_fail;
 		}
 
@@ -462,13 +462,13 @@ static void __init dm_setup_drives(void)
 		 * capacity directly.
 		 */
 		if (dm_swap_table(md, table)) {  /* should return NULL. */
-			DMDEBUG("failed to bind the device to the table");
+			DMINFO("failed to bind the device to the table");
 			goto table_bind_fail;
 		}
 
 		/* Finally, resume and the device should be ready. */
 		if (dm_resume(md)) {
-			DMDEBUG("failed to resume the device");
+			DMINFO("failed to resume the device");
 			goto resume_fail;
 		}
 
@@ -476,7 +476,7 @@ static void __init dm_setup_drives(void)
 		if (!strcmp(DM_NO_UUID, dev->uuid))
 			uuid = NULL;
 		if (dm_ioctl_export(md, dev->name, uuid)) {
-			DMDEBUG("failed to export device with given"
+			DMINFO("failed to export device with given"
 				" name and uuid");
 			goto export_fail;
 		}

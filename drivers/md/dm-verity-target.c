@@ -138,7 +138,7 @@ static int verity_hash_init(struct dm_verity *v, struct ahash_request *req,
 	r = crypto_wait_req(crypto_ahash_init(req), wait);
 
 	if (unlikely(r < 0)) {
-		DMERR("crypto_ahash_init failed: %d", r);
+		DMINFO("crypto_ahash_init failed: %d", r);
 		return r;
 	}
 
@@ -157,7 +157,7 @@ static int verity_hash_final(struct dm_verity *v, struct ahash_request *req,
 		r = verity_hash_update(v, req, v->salt, v->salt_size, wait);
 
 		if (r < 0) {
-			DMERR("verity_hash_final failed updating salt: %d", r);
+			DMINFO("verity_hash_final failed updating salt: %d", r);
 			goto out;
 		}
 	}
@@ -236,11 +236,11 @@ static int verity_handle_err(struct dm_verity *v, enum verity_block_type type,
 		BUG();
 	}
 
-	DMERR("%s: %s block %llu is corrupted", v->data_dev->name, type_str,
+	DMINFO("%s: %s block %llu is corrupted", v->data_dev->name, type_str,
 		block);
 
 	if (v->corrupted_errs == DM_VERITY_MAX_CORRUPTED_ERRS)
-		DMERR("%s: reached maximum errors", v->data_dev->name);
+		DMINFO("%s: reached maximum errors", v->data_dev->name);
 
 	snprintf(verity_env, DM_VERITY_ENV_LENGTH, "%s=%d,%llu",
 		DM_VERITY_ENV_VAR_NAME, type, block);
@@ -255,7 +255,8 @@ out:
 #ifdef CONFIG_DM_VERITY_AVB
 		dm_verity_avb_error_handler();
 #endif
-		kernel_restart("dm-verity device corrupted");
+//		kernel_restart("dm-verity device corrupted");
+		return 0;
 	}
 
 	return 1;
@@ -309,7 +310,9 @@ static int verity_verify_level(struct dm_verity *v, struct dm_verity_io *io,
 		else if (verity_fec_decode(v, io,
 					   DM_VERITY_BLOCK_TYPE_METADATA,
 					   hash_block, data, NULL) == 0)
-			aux->hash_verified = 1;
+		{
+		aux->hash_verified = 1;
+		}
 		else if (verity_handle_err(v,
 					   DM_VERITY_BLOCK_TYPE_METADATA,
 					   hash_block)) {
@@ -397,7 +400,7 @@ static int verity_for_io_block(struct dm_verity *v, struct dm_verity_io *io,
 		r = crypto_wait_req(crypto_ahash_update(req), wait);
 
 		if (unlikely(r < 0)) {
-			DMERR("verity_for_io_block crypto op failed: %d", r);
+			DMINFO("verity_for_io_block crypto op failed: %d", r);
 			return r;
 		}
 
@@ -528,10 +531,16 @@ static int verity_verify_io(struct dm_verity_io *io)
 		}
 		else if (verity_fec_decode(v, io, DM_VERITY_BLOCK_TYPE_DATA,
 					   cur_block, NULL, &start) == 0)
+		{
+			DMINFO("DMV:%d", __LINE__);
 			continue;
+		}
 		else if (verity_handle_err(v, DM_VERITY_BLOCK_TYPE_DATA,
 					   cur_block))
+		{
+			DMINFO("DMV:%d", __LINE__);
 			return -EIO;
+		}
 	}
 
 	return 0;
@@ -651,13 +660,13 @@ int verity_map(struct dm_target *ti, struct bio *bio)
 
 	if (((unsigned)bio->bi_iter.bi_sector | bio_sectors(bio)) &
 	    ((1 << (v->data_dev_block_bits - SECTOR_SHIFT)) - 1)) {
-		DMERR_LIMIT("unaligned io");
+		DMINFO_LIMIT("unaligned io");
 		return DM_MAPIO_KILL;
 	}
 
 	if (bio_end_sector(bio) >>
 	    (v->data_dev_block_bits - SECTOR_SHIFT) > v->data_blocks) {
-		DMERR_LIMIT("io out of range");
+		DMINFO_LIMIT("io out of range");
 		return DM_MAPIO_KILL;
 	}
 
@@ -1202,7 +1211,7 @@ static int __init dm_verity_init(void)
 
 	r = dm_register_target(&verity_target);
 	if (r < 0)
-		DMERR("register failed %d", r);
+		DMINFO("register failed %d", r);
 
 	return r;
 }
