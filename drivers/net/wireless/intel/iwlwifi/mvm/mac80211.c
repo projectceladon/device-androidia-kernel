@@ -715,6 +715,8 @@ int iwl_mvm_mac_setup_register(struct iwl_mvm *mvm)
 	mvm->bcast_filters = iwl_mvm_default_bcast_filters;
 #endif
 
+	iwl_mvm_set_wiphy_vendor_commands(hw->wiphy);
+
 	ret = iwl_mvm_leds_init(mvm);
 	if (ret)
 		return ret;
@@ -1582,6 +1584,10 @@ static void iwl_mvm_mc_iface_iterator(void *_data, u8 *mac,
 	};
 	int ret, len;
 
+	if (!(mvm->rx_filters & IWL_MVM_VENDOR_RXFILTER_EINVAL) &&
+	    mvm->mcast_active_filter_cmd)
+		cmd = mvm->mcast_active_filter_cmd;
+
 	/* if we don't have free ports, mcast frames will be dropped */
 	if (WARN_ON_ONCE(data->port_id >= MAX_PORT_ID_NUM))
 		return;
@@ -1602,7 +1608,7 @@ static void iwl_mvm_mc_iface_iterator(void *_data, u8 *mac,
 		IWL_ERR(mvm, "mcast filter cmd error. ret=%d\n", ret);
 }
 
-static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
 {
 	struct iwl_mvm_mc_iter_data iter_data = {
 		.mvm = mvm,
@@ -1841,7 +1847,7 @@ bool iwl_mvm_bcast_filter_build_cmd(struct iwl_mvm *mvm,
 	return true;
 }
 
-static int iwl_mvm_configure_bcast_filter(struct iwl_mvm *mvm)
+int iwl_mvm_configure_bcast_filter(struct iwl_mvm *mvm)
 {
 	struct iwl_bcast_filter_cmd cmd;
 
@@ -1855,7 +1861,7 @@ static int iwl_mvm_configure_bcast_filter(struct iwl_mvm *mvm)
 				    sizeof(cmd), &cmd);
 }
 #else
-static inline int iwl_mvm_configure_bcast_filter(struct iwl_mvm *mvm)
+inline int iwl_mvm_configure_bcast_filter(struct iwl_mvm *mvm)
 {
 	return 0;
 }

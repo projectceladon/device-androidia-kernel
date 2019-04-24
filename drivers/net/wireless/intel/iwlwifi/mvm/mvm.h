@@ -88,6 +88,7 @@
 #include "sta.h"
 #include "fw-api.h"
 #include "constants.h"
+#include "iwl-vendor-cmd.h"
 #include "tof.h"
 #include "fw/runtime.h"
 #include "fw/dbg.h"
@@ -1089,6 +1090,9 @@ struct iwl_mvm {
 	struct ieee80211_cipher_scheme cs[IWL_UCODE_MAX_CS];
 	struct iwl_mvm_tof_data tof_data;
 
+	struct iwl_mcast_filter_cmd *mcast_active_filter_cmd;
+	u8 rx_filters;
+
 	struct ieee80211_vif *nan_vif;
 #define IWL_MAX_BAID	32
 	struct iwl_mvm_baid_data __rcu *baid_map[IWL_MAX_BAID];
@@ -1968,6 +1972,7 @@ bool iwl_mvm_is_vif_assoc(struct iwl_mvm *mvm);
 
 void iwl_mvm_inactivity_check(struct iwl_mvm *mvm);
 
+void iwl_mvm_set_wiphy_vendor_commands(struct wiphy *wiphy);
 #define MVM_TCM_PERIOD_MSEC 500
 #define MVM_TCM_PERIOD (HZ * MVM_TCM_PERIOD_MSEC / 1000)
 #define MVM_LL_PERIOD (10 * HZ)
@@ -1985,6 +1990,12 @@ unsigned int iwl_mvm_get_wd_timeout(struct iwl_mvm *mvm,
 				    bool tdls, bool cmd_q);
 void iwl_mvm_connection_loss(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			     const char *errmsg);
+
+void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm);
+int iwl_mvm_configure_bcast_filter(struct iwl_mvm *mvm);
+
+void iwl_mvm_active_rx_filters(struct iwl_mvm *mvm);
+
 void iwl_mvm_event_frame_timeout_callback(struct iwl_mvm *mvm,
 					  struct ieee80211_vif *vif,
 					  const struct ieee80211_sta *sta,
