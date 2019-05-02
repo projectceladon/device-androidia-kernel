@@ -22,6 +22,10 @@
 
 static DEFINE_IDR(dbc_minors);
 
+static char *serialno = DBC_STR_SERIAL;
+module_param(serialno, charp, S_IRUGO | S_IWUSR);
+MODULE_PARM_DESC(serialno, "Use Platform Serial No. as DbC device serial No.");
+
 struct dbc_dev {
 	struct mutex dev_excl;
 	struct mutex read_excl;
@@ -333,7 +337,6 @@ static struct dbc_function raw_func = {
 	.string = {
 		.manufacturer = DBC_STR_MANUFACTURER,
 		.product = DBC_STR_PRODUCT,
-		.serial = DBC_STR_SERIAL,
 	},
 	.protocol = DBC_PROTOCOL,
 	.vid = DBC_VENDOR_ID,
@@ -347,6 +350,7 @@ static struct dbc_function raw_func = {
 
 static int __init xhci_dbc_raw_init(void)
 {
+	strcpy(&raw_func.string.serial, serialno);
 	return xhci_dbc_register_function(&raw_func);
 }
 
