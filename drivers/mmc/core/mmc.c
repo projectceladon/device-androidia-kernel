@@ -997,6 +997,7 @@ static int mmc_select_bus_width(struct mmc_card *card)
 	unsigned idx, bus_width = 0;
 	int err = 0;
 
+	pr_info("############ In # %s: \n",__func__);
 	if (!mmc_can_ext_csd(card) ||
 	    !(host->caps & (MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA)))
 		return 0;
@@ -1046,6 +1047,7 @@ static int mmc_select_bus_width(struct mmc_card *card)
 		}
 	}
 
+	pr_info("############ %s: Bus width Err:%d \n",__func__);
 	return err;
 }
 
@@ -1441,6 +1443,7 @@ static int mmc_select_hs200(struct mmc_card *card)
 	if (err && card->mmc_avail_type & EXT_CSD_CARD_TYPE_HS200_1_8V)
 		err = mmc_set_signal_voltage(host, MMC_SIGNAL_VOLTAGE_180);
 
+	pr_info("############ %s: After Set signal voltage Err:%d \n",__func__, err);
 	/* If fails try again during next card power cycle */
 	if (err)
 		return err;
@@ -1452,6 +1455,7 @@ static int mmc_select_hs200(struct mmc_card *card)
 	 * switch to HS200 mode if bus width is set successfully.
 	 */
 	err = mmc_select_bus_width(card);
+	pr_info("############ %s: After Set the bus width(4 or 8) with host's Err:%d \n",__func__, err);
 	if (err > 0) {
 		val = EXT_CSD_TIMING_HS200 |
 		      card->drive_strength << EXT_CSD_DRV_STR_SHIFT;
@@ -1470,6 +1474,7 @@ static int mmc_select_hs200(struct mmc_card *card)
 		 * tuning will fail and the result ends up the same.
 		 */
 		err = __mmc_switch_status(card, false);
+		pr_info("############ %s: After Switch Status Err:%d \n",__func__, err);
 
 		/*
 		 * mmc_select_timing() assumes timing has not changed if
@@ -1479,6 +1484,7 @@ static int mmc_select_hs200(struct mmc_card *card)
 			mmc_set_timing(host, old_timing);
 	}
 err:
+	pr_info("############ %s: Befor err: Err:%d \n",__func__, err);
 	if (err) {
 		/* fall back to the old signal voltage, if fails report error */
 		if (mmc_set_signal_voltage(host, old_signal_voltage))

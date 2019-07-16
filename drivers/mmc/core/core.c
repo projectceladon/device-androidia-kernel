@@ -1477,6 +1477,7 @@ int mmc_set_signal_voltage(struct mmc_host *host, int signal_voltage)
 	if (err)
 		host->ios.signal_voltage = old_signal_voltage;
 
+	pr_info("############ %s: Inside Set signal voltage Err:%d \n",__func__, err);
 	return err;
 
 }
