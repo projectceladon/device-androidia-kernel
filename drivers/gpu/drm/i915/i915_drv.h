@@ -2703,11 +2703,15 @@ intel_info(const struct drm_i915_private *dev_priv)
 
 static inline bool intel_vtd_active(void)
 {
+#if 0
 #ifdef CONFIG_INTEL_IOMMU
 	if (intel_iommu_gfx_mapped)
 		return true;
 #endif
 	return false;
+#else
+	return true;
+#endif
 }
 
 static inline bool intel_scanout_needs_vtd_wa(struct drm_i915_private *dev_priv)
