@@ -242,12 +242,25 @@ static int sys_get_trip_type(struct thermal_zone_device *thermal, int trip,
 	return 0;
 }
 
+static int sys_set_emul_temp(struct thermal_zone_device *tz, int temp)
+{
+       if(temp > 110000 || temp < -40000){
+               printk(KERN_ERROR "invalid emul_temperature %d\n", temp);
+       }else{
+               tz->emul_temperature = temp;
+               printk(KERN_ERROR "emul_temperature %d\n", temp);
+       }
+
+       return 0;
+}
+
 /* Thermal zone callback registry */
 static struct thermal_zone_device_ops tzone_ops = {
 	.get_temp = sys_get_curr_temp,
 	.get_trip_temp = sys_get_trip_temp,
 	.get_trip_type = sys_get_trip_type,
 	.set_trip_temp = sys_set_trip_temp,
+	.set_emul_temp = sys_set_emul_temp,
 };
 
 static bool pkg_thermal_rate_control(void)
