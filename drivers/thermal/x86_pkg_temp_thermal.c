@@ -245,10 +245,10 @@ static int sys_get_trip_type(struct thermal_zone_device *thermal, int trip,
 static int sys_set_emul_temp(struct thermal_zone_device *tz, int temp)
 {
        if(temp > 110000 || temp < -40000){
-               printk(KERN_DEBUG "invalid emul_temperature %d\n", temp);
+               printk(KERN_ERROR "invalid emul_temperature %d\n", temp);
        }else{
                tz->emul_temperature = temp;
-               printk(KERN_DEBUG "emul_temperature %d\n", temp);
+               printk(KERN_ERROR "emul_temperature %d\n", temp);
        }
 
        return 0;
