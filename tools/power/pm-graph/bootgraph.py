@@ -141,13 +141,13 @@ class SystemValues(aslib.SystemValues):
 			if arg in ['-h', '-v', '-cronjob', '-reboot', '-verbose']:
 				continue
 			elif arg in ['-o', '-dmesg', '-ftrace', '-func']:
-				args.next()
+				next(args)
 				continue
 			elif arg == '-result':
-				cmdline += ' %s "%s"' % (arg, os.path.abspath(args.next()))
+				cmdline += ' %s "%s"' % (arg, os.path.abspath(next(args)))
 				continue
 			elif arg == '-cgskip':
-				file = self.configFile(args.next())
+				file = self.configFile(next(args))
 				cmdline += ' %s "%s"' % (arg, os.path.abspath(file))
 				continue
 			cmdline += ' '+arg
@@ -157,11 +157,11 @@ class SystemValues(aslib.SystemValues):
 		return cmdline
 	def manualRebootRequired(self):
 		cmdline = self.kernelParams()
-		print 'To generate a new timeline manually, follow these steps:\n'
-		print '1. Add the CMDLINE string to your kernel command line.'
-		print '2. Reboot the system.'
-		print '3. After reboot, re-run this tool with the same arguments but no command (w/o -reboot or -manual).\n'
-		print 'CMDLINE="%s"' % cmdline
+		print('To generate a new timeline manually, follow these steps:\n')
+		print('1. Add the CMDLINE string to your kernel command line.')
+		print('2. Reboot the system.')
+		print('3. After reboot, re-run this tool with the same arguments but no command (w/o -reboot or -manual).\n')
+		print('CMDLINE="%s"' % cmdline)
 		sys.exit()
 	def blGrub(self):
 		blcmd = ''
@@ -431,7 +431,7 @@ def parseTraceLog(data):
 			if len(cg.list) < 1 or cg.invalid or (cg.end - cg.start == 0):
 				continue
 			if(not cg.postProcess()):
-				print('Sanity check failed for %s-%d' % (proc, pid))
+				print(('Sanity check failed for %s-%d' % (proc, pid)))
 				continue
 			# match cg data to devices
 			devname = data.deviceMatch(pid, cg)
@@ -442,8 +442,8 @@ def parseTraceLog(data):
 				sysvals.vprint('%s callgraph found for %s %s-%d [%f - %f]' %\
 					(kind, cg.name, proc, pid, cg.start, cg.end))
 			elif len(cg.list) > 1000000:
-				print 'WARNING: the callgraph found for %s is massive! (%d lines)' %\
-					(devname, len(cg.list))
+				print('WARNING: the callgraph found for %s is massive! (%d lines)' %\
+					(devname, len(cg.list)))
 
 # Function: retrieveLogs
 # Description:
@@ -733,8 +733,8 @@ def updateCron(restore=False):
 		op.write('@reboot python %s\n' % sysvals.cronjobCmdString())
 		op.close()
 		res = call([cmd, cronfile])
-	except Exception, e:
-		print 'Exception: %s' % str(e)
+	except Exception as e:
+		print('Exception: %s' % str(e))
 		shutil.move(backfile, cronfile)
 		res = -1
 	if res != 0:
@@ -749,8 +749,8 @@ def updateGrub(restore=False):
 		try:
 			call(sysvals.blexec, stderr=PIPE, stdout=PIPE,
 				env={'PATH': '.:/sbin:/usr/sbin:/usr/bin:/sbin:/bin'})
-		except Exception, e:
-			print 'Exception: %s\n' % str(e)
+		except Exception as e:
+			print('Exception: %s\n' % str(e))
 		return
 	# extract the option and create a grub config without it
 	sysvals.rootUser(True)
@@ -796,8 +796,8 @@ def updateGrub(restore=False):
 		op.close()
 		res = call(sysvals.blexec)
 		os.remove(grubfile)
-	except Exception, e:
-		print 'Exception: %s' % str(e)
+	except Exception as e:
+		print('Exception: %s' % str(e))
 		res = -1
 	# cleanup
 	shutil.move(tempfile, grubfile)
@@ -821,7 +821,7 @@ def updateKernelParams(restore=False):
 def doError(msg, help=False):
 	if help == True:
 		printHelp()
-	print 'ERROR: %s\n' % msg
+	print('ERROR: %s\n' % msg)
 	sysvals.outputResult({'error':msg})
 	sys.exit()
 
@@ -830,7 +830,7 @@ def doError(msg, help=False):
 #	 print out the help text
 def printHelp():
 	print('')
-	print('%s v%s' % (sysvals.title, sysvals.version))
+	print(('%s v%s' % (sysvals.title, sysvals.version)))
 	print('Usage: bootgraph <options> <command>')
 	print('')
 	print('Description:')
@@ -895,7 +895,7 @@ if __name__ == '__main__':
 			printHelp()
 			sys.exit()
 		elif(arg == '-v'):
-			print("Version %s" % sysvals.version)
+			print(("Version %s" % sysvals.version))
 			sys.exit()
 		elif(arg == '-verbose'):
 			sysvals.verbose = True
@@ -912,13 +912,13 @@ if __name__ == '__main__':
 			sysvals.mincglen = aslib.getArgFloat('-mincg', args, 0.0, 10000.0)
 		elif(arg == '-cgfilter'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No callgraph functions supplied', True)
 			sysvals.setCallgraphFilter(val)
 		elif(arg == '-cgskip'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No file supplied', True)
 			if val.lower() in switchoff:
@@ -929,7 +929,7 @@ if __name__ == '__main__':
 					doError('%s does not exist' % cgskip)
 		elif(arg == '-bl'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No boot loader name supplied', True)
 			if val.lower() not in ['grub']:
@@ -942,7 +942,7 @@ if __name__ == '__main__':
 			sysvals.max_graph_depth = aslib.getArgInt('-maxdepth', args, 0, 1000)
 		elif(arg == '-func'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No filter functions supplied', True)
 			sysvals.useftrace = True
@@ -951,7 +951,7 @@ if __name__ == '__main__':
 			sysvals.setGraphFilter(val)
 		elif(arg == '-ftrace'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No ftrace file supplied', True)
 			if(os.path.exists(val) == False):
@@ -964,7 +964,7 @@ if __name__ == '__main__':
 			sysvals.cgexp = True
 		elif(arg == '-dmesg'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No dmesg file supplied', True)
 			if(os.path.exists(val) == False):
@@ -973,13 +973,13 @@ if __name__ == '__main__':
 			sysvals.dmesgfile = val
 		elif(arg == '-o'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No subdirectory name supplied', True)
 			sysvals.testdir = sysvals.setOutputFolder(val)
 		elif(arg == '-result'):
 			try:
-				val = args.next()
+				val = next(args)
 			except:
 				doError('No result file supplied', True)
 			sysvals.result = val
@@ -1013,10 +1013,10 @@ if __name__ == '__main__':
 			updateKernelParams()
 		elif cmd == 'flistall':
 			for f in sysvals.getBootFtraceFilterFunctions():
-				print f
+				print(f)
 		elif cmd == 'checkbl':
 			sysvals.getBootLoader()
-			print 'Boot Loader: %s\n%s' % (sysvals.bootloader, sysvals.blexec)
+			print('Boot Loader: %s\n%s' % (sysvals.bootloader, sysvals.blexec))
 		elif(cmd == 'sysinfo'):
 			sysvals.printSystemInfo(True)
 		sys.exit()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8; mode: python -*-
 # pylint: disable=C0103, R0903, R0912, R0915
-u"""
+"""
     scalable figure and image handling
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -67,7 +67,7 @@ PY3 = sys.version_info[0] == 3
 if PY3:
     _unicode = str
 else:
-    _unicode = unicode
+    _unicode = str
 
 # Get Sphinx version
 major, minor, patch = sphinx.version_info[:3]
@@ -167,7 +167,7 @@ def setup(app):
 
 
 def setupTools(app):
-    u"""
+    """
     Check available build tools and log some *verbose* messages.
 
     This function is called once, when the builder is initiated.
@@ -348,7 +348,7 @@ class kernel_image(nodes.image):
     pass
 
 class KernelImage(images.Image):
-    u"""KernelImage directive
+    """KernelImage directive
 
     Earns everything from ``.. image::`` directive, except *remote URI* and
     *glob* pattern. The KernelImage wraps a image node into a
@@ -384,7 +384,7 @@ class kernel_figure(nodes.figure):
     """Node for ``kernel-figure`` directive."""
 
 class KernelFigure(Figure):
-    u"""KernelImage directive
+    """KernelImage directive
 
     Earns everything from ``.. figure::`` directive, except *remote URI* and
     *glob* pattern.  The KernelFigure wraps a figure node into a kernel_figure
@@ -460,7 +460,7 @@ class kernel_render(nodes.General, nodes.Inline, nodes.Element):
     pass
 
 class KernelRender(Figure):
-    u"""KernelRender directive
+    """KernelRender directive
 
     Render content by external tool.  Has all the options known from the
     *figure*  directive, plus option ``caption``.  If ``caption`` has a
@@ -486,10 +486,10 @@ class KernelRender(Figure):
     def build_node(self):
 
         srclang = self.arguments[0].strip()
-        if srclang not in RENDER_MARKUP_EXT.keys():
+        if srclang not in list(RENDER_MARKUP_EXT.keys()):
             return [self.state_machine.reporter.warning(
                 'Unknown source language "%s", use one of: %s.' % (
-                    srclang, ",".join(RENDER_MARKUP_EXT.keys())),
+                    srclang, ",".join(list(RENDER_MARKUP_EXT.keys()))),
                 line=self.lineno)]
 
         code = '\n'.join(self.content)
@@ -517,7 +517,7 @@ class KernelRender(Figure):
             caption_node.line = parsed[0].line
 
             figure_node = nodes.figure('', node)
-            for k,v in self.options.items():
+            for k,v in list(self.options.items()):
                 figure_node[k] = v
             figure_node += caption_node
 

@@ -108,7 +108,7 @@ LxIOPorts()
 
 def info_opts(lst, opt):
     opts = ""
-    for key, string in lst.items():
+    for key, string in list(lst.items()):
         if opt & key:
             opts += string
     return opts

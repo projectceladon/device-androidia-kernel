@@ -123,9 +123,9 @@ def main():
     if args.sim and not args.commit and not args.diff:
         sims = find_sims(args.sim, args.ignore)
         if sims:
-            print("%s: %s" % (yel("Similar symbols"), ', '.join(sims)))
+            print(("%s: %s" % (yel("Similar symbols"), ', '.join(sims))))
         else:
-            print("%s: no similar symbols found" % yel("Similar symbols"))
+            print(("%s: no similar symbols found" % yel("Similar symbols")))
         sys.exit(0)
 
     # dictionary of (un)defined symbols
@@ -178,25 +178,25 @@ def main():
 
     # now print the output
     for symbol in sorted(undefined):
-        print(red(symbol))
+        print((red(symbol)))
 
         files = sorted(undefined.get(symbol))
-        print("%s: %s" % (yel("Referencing files"), ", ".join(files)))
+        print(("%s: %s" % (yel("Referencing files"), ", ".join(files))))
 
         sims = find_sims(symbol, args.ignore, defined)
         sims_out = yel("Similar symbols")
         if sims:
-            print("%s: %s" % (sims_out, ', '.join(sims)))
+            print(("%s: %s" % (sims_out, ', '.join(sims))))
         else:
-            print("%s: %s" % (sims_out, "no similar symbols found"))
+            print(("%s: %s" % (sims_out, "no similar symbols found")))
 
         if args.find:
-            print("%s:" % yel("Commits changing symbol"))
+            print(("%s:" % yel("Commits changing symbol")))
             commits = find_commits(symbol, args.diff)
             if commits:
                 for commit in commits:
                     commit = commit.split(" ", 1)
-                    print("\t- %s (\"%s\")" % (yel(commit[0]), commit[1]))
+                    print(("\t- %s (\"%s\")" % (yel(commit[0]), commit[1])))
             else:
                 print("\t- no commit found")
         print()  # new line
@@ -350,7 +350,7 @@ def check_symbols_helper(pool, ignore):
 
     # inverse mapping of referenced_symbols to dict(symbol: [files])
     inv_map = dict()
-    for _file, symbols in referenced_symbols.items():
+    for _file, symbols in list(referenced_symbols.items()):
         for symbol in symbols:
             inv_map[symbol] = inv_map.get(symbol, set())
             inv_map[symbol].add(_file)

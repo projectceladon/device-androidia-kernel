@@ -8,7 +8,7 @@
 # will be refreshed every [interval] seconds.  The default interval is
 # 3 seconds.
 
-import os, sys, thread, time
+import os, sys, _thread, time
 
 sys.path.append(os.environ['PERF_EXEC_PATH'] + \
 	'/scripts/python/Perf-Trace-Util/lib/Perf/Trace')
@@ -39,7 +39,7 @@ elif len(sys.argv) > 1:
 syscalls = autodict()
 
 def trace_begin():
-	thread.start_new_thread(print_syscall_totals, (interval,))
+	_thread.start_new_thread(print_syscall_totals, (interval,))
 	pass
 
 def raw_syscalls__sys_enter(event_name, context, common_cpu,
@@ -62,18 +62,18 @@ def print_syscall_totals(interval):
 	while 1:
 		clear_term()
 		if for_comm is not None:
-			print "\nsyscall events for %s:\n\n" % (for_comm),
+			print("\nsyscall events for %s:\n\n" % (for_comm), end=' ')
 		else:
-			print "\nsyscall events:\n\n",
+			print("\nsyscall events:\n\n", end=' ')
 
-		print "%-40s  %10s\n" % ("event", "count"),
-		print "%-40s  %10s\n" % ("----------------------------------------", \
-						 "----------"),
+		print("%-40s  %10s\n" % ("event", "count"), end=' ')
+		print("%-40s  %10s\n" % ("----------------------------------------", \
+						 "----------"), end=' ')
 
-		for id, val in sorted(syscalls.iteritems(), key = lambda(k, v): (v, k), \
+		for id, val in sorted(iter(syscalls.items()), key = lambda k_v: (k_v[1], k_v[0]), \
 					      reverse = True):
 			try:
-				print "%-40s  %10d\n" % (syscall_name(id), val),
+				print("%-40s  %10d\n" % (syscall_name(id), val), end=' ')
 			except TypeError:
 				pass
 		syscalls.clear()

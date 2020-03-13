@@ -27,7 +27,7 @@ class SubPlugin(TdcPlugin):
         '''run commands before test_runner goes into a test loop'''
         super().pre_suite(testcount, testidlist)
         if self.args.verbose > 1:
-            print('{}.pre_suite'.format(self.sub_class))
+            print(('{}.pre_suite'.format(self.sub_class)))
         if self.args.valgrind:
             self._add_to_tap('1..{}\n'.format(self.testcount))
 
@@ -36,8 +36,8 @@ class SubPlugin(TdcPlugin):
         super().post_suite(index)
         self._add_to_tap('\n|---\n')
         if self.args.verbose > 1:
-            print('{}.post_suite'.format(self.sub_class))
-        print('{}'.format(self.tap))
+            print(('{}.post_suite'.format(self.sub_class)))
+        print(('{}'.format(self.tap)))
         if self.args.verbose < 4:
             subprocess.check_output('rm -f vgnd-*.log', shell=True)
 
@@ -62,7 +62,7 @@ class SubPlugin(TdcPlugin):
             return command
 
         if self.args.verbose > 1:
-            print('{}.adjust_command'.format(self.sub_class))
+            print(('{}.adjust_command'.format(self.sub_class)))
 
         if not isinstance(command, list):
             cmdform = 'str'
@@ -72,8 +72,8 @@ class SubPlugin(TdcPlugin):
 
         if stage == 'execute':
             if self.args.verbose > 1:
-                print('adjust_command:  stage is {}; inserting valgrind stuff in command [{}] list [{}]'.
-                      format(stage, command, cmdlist))
+                print(('adjust_command:  stage is {}; inserting valgrind stuff in command [{}] list [{}]'.
+                      format(stage, command, cmdlist)))
             cmdlist.insert(0, '--track-origins=yes')
             cmdlist.insert(0, '--show-leak-kinds=definite,indirect')
             cmdlist.insert(0, '--leak-check=full')
@@ -89,7 +89,7 @@ class SubPlugin(TdcPlugin):
             command = cmdlist
 
         if self.args.verbose > 1:
-            print('adjust_command:  return command [{}]'.format(command))
+            print(('adjust_command:  return command [{}]'.format(command)))
         return command
 
     def post_execute(self):
@@ -135,7 +135,7 @@ class SubPlugin(TdcPlugin):
             self.args.test_ordinal, self.args.testid, 'memory leak check')
         self._add_to_tap(mem_results)
         if mem_results.startswith('not '):
-            print('{}'.format(content))
+            print(('{}'.format(content)))
             self._add_to_tap(content)
 
     def _add_to_tap(self, more_tap_output):
