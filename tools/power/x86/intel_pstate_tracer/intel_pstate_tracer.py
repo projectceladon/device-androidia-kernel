@@ -22,7 +22,7 @@ Prerequisites:
     see print_help(): for Usage and Output details
 
 """
-from __future__ import print_function
+
 from datetime import datetime
 import subprocess
 import os

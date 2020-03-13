@@ -9,14 +9,14 @@
 # This software is distributed under the terms of the GNU General
 # Public License ("GPL") version 2 as published by the Free Software
 # Foundation.
-from __future__ import print_function
+
 
 import os
 import sys
 
 from collections import defaultdict
 try:
-    from UserList import UserList
+    from collections import UserList
 except ImportError:
     # Python 3: UserList moved to the collections package
     from collections import UserList

@@ -23,7 +23,7 @@ class SubPlugin(TdcPlugin):
         '''run commands after test_runner goes into a test loop'''
         super().post_suite(index)
         if self.args.verbose:
-            print('{}.post_suite'.format(self.sub_class))
+            print(('{}.post_suite'.format(self.sub_class)))
 
         if self.args.namespace:
             self._ns_destroy()
@@ -47,7 +47,7 @@ class SubPlugin(TdcPlugin):
             return command
 
         if self.args.verbose:
-            print('{}.adjust_command'.format(self.sub_class))
+            print(('{}.adjust_command'.format(self.sub_class)))
 
         if not isinstance(command, list):
             cmdform = 'str'
@@ -56,7 +56,7 @@ class SubPlugin(TdcPlugin):
             cmdlist = command
         if stage == 'setup' or stage == 'execute' or stage == 'verify' or stage == 'teardown':
             if self.args.verbose:
-                print('adjust_command:  stage is {}; inserting netns stuff in command [{}] list [{}]'.format(stage, command, cmdlist))
+                print(('adjust_command:  stage is {}; inserting netns stuff in command [{}] list [{}]'.format(stage, command, cmdlist)))
             cmdlist.insert(0, self.args.NAMES['NS'])
             cmdlist.insert(0, 'exec')
             cmdlist.insert(0, 'netns')
@@ -70,7 +70,7 @@ class SubPlugin(TdcPlugin):
             command = cmdlist
 
         if self.args.verbose:
-            print('adjust_command:  return command [{}]'.format(command))
+            print(('adjust_command:  return command [{}]'.format(command)))
         return command
 
     def _ns_create(self):
@@ -114,7 +114,7 @@ class SubPlugin(TdcPlugin):
 
         self.adjust_command(stage, command)
         if self.args.verbose:
-            print('_exec_cmd:  command "{}"'.format(command))
+            print(('_exec_cmd:  command "{}"'.format(command)))
         proc = subprocess.Popen(command,
             shell=True,
             stdout=subprocess.PIPE,

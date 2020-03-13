@@ -4,7 +4,7 @@
 # Copyright (C) 2018 Netronome Systems, Inc.
 
 # In case user attempts to run with Python 2.
-from __future__ import print_function
+
 
 import argparse
 import re
