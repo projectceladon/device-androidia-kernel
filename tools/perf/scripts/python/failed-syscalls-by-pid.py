@@ -32,7 +32,7 @@ if len(sys.argv) > 1:
 syscalls = autodict()
 
 def trace_begin():
-	print "Press control+C to stop and show the summary"
+	print("Press control+C to stop and show the summary")
 
 def trace_end():
 	print_error_totals()
@@ -57,22 +57,22 @@ def syscalls__sys_exit(event_name, context, common_cpu,
 
 def print_error_totals():
     if for_comm is not None:
-	    print "\nsyscall errors for %s:\n\n" % (for_comm),
+	    print("\nsyscall errors for %s:\n\n" % (for_comm), end=' ')
     else:
-	    print "\nsyscall errors:\n\n",
+	    print("\nsyscall errors:\n\n", end=' ')
 
-    print "%-30s  %10s\n" % ("comm [pid]", "count"),
-    print "%-30s  %10s\n" % ("------------------------------", \
-                                 "----------"),
+    print("%-30s  %10s\n" % ("comm [pid]", "count"), end=' ')
+    print("%-30s  %10s\n" % ("------------------------------", \
+                                 "----------"), end=' ')
 
-    comm_keys = syscalls.keys()
+    comm_keys = list(syscalls.keys())
     for comm in comm_keys:
-	    pid_keys = syscalls[comm].keys()
+	    pid_keys = list(syscalls[comm].keys())
 	    for pid in pid_keys:
-		    print "\n%s [%d]\n" % (comm, pid),
-		    id_keys = syscalls[comm][pid].keys()
+		    print("\n%s [%d]\n" % (comm, pid), end=' ')
+		    id_keys = list(syscalls[comm][pid].keys())
 		    for id in id_keys:
-			    print "  syscall: %-16s\n" % syscall_name(id),
-			    ret_keys = syscalls[comm][pid][id].keys()
-			    for ret, val in sorted(syscalls[comm][pid][id].iteritems(), key = lambda(k, v): (v, k),  reverse = True):
-				    print "    err = %-20s  %10d\n" % (strerror(ret), val),
+			    print("  syscall: %-16s\n" % syscall_name(id), end=' ')
+			    ret_keys = list(syscalls[comm][pid][id].keys())
+			    for ret, val in sorted(iter(syscalls[comm][pid][id].items()), key = lambda k_v: (k_v[1], k_v[0]),  reverse = True):
+				    print("    err = %-20s  %10d\n" % (strerror(ret), val), end=' ')

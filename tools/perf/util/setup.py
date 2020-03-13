@@ -49,7 +49,7 @@ ext_sources = [f.strip() for f in open('util/python-ext-sources')
 				if len(f.strip()) > 0 and f[0] != '#']
 
 # use full paths with source files
-ext_sources = list(map(lambda x: '%s/%s' % (src_perf, x) , ext_sources))
+ext_sources = list(['%s/%s' % (src_perf, x) for x in ext_sources])
 
 perf = Extension('perf',
 		  sources = ext_sources,

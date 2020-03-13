@@ -43,7 +43,7 @@ host = socket.gethostname()
 
 try: serverSocket.bind((host, 0))
 except socket.error as msg:
-    print('bind fails: ' + str(msg))
+    print(('bind fails: ' + str(msg)))
 
 sn = serverSocket.getsockname()
 serverPort = sn[1]

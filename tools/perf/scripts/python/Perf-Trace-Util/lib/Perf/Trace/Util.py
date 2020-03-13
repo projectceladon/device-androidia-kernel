@@ -5,7 +5,7 @@
 # This software may be distributed under the terms of the GNU General
 # Public License ("GPL") version 2 as published by the Free Software
 # Foundation.
-from __future__ import print_function
+
 
 import errno, os
 

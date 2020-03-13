@@ -20,7 +20,7 @@ fabric_mod_port = ""
 fabric_mod_init_port = ""
 
 def tcm_mod_err(msg):
-	print msg
+	print(msg)
 	sys.exit(1)
 
 def tcm_mod_create_module_subdir(fabric_mod_dir_var):
@@ -28,7 +28,7 @@ def tcm_mod_create_module_subdir(fabric_mod_dir_var):
 	if os.path.isdir(fabric_mod_dir_var) == True:
 		return 1
 
-	print "Creating fabric_mod_dir: " + fabric_mod_dir_var
+	print("Creating fabric_mod_dir: " + fabric_mod_dir_var)
 	ret = os.mkdir(fabric_mod_dir_var)
 	if ret:
 		tcm_mod_err("Unable to mkdir " + fabric_mod_dir_var)
@@ -41,7 +41,7 @@ def tcm_mod_build_FC_include(fabric_mod_dir_var, fabric_mod_name):
 	buf = ""
 
 	f = fabric_mod_dir_var + "/" + fabric_mod_name + "_base.h"
-	print "Writing file: " + f
+	print("Writing file: " + f)
 
 	p = open(f, 'w');
 	if not p:
@@ -85,7 +85,7 @@ def tcm_mod_build_SAS_include(fabric_mod_dir_var, fabric_mod_name):
 	buf = ""
 
 	f = fabric_mod_dir_var + "/" + fabric_mod_name + "_base.h"
-	print "Writing file: " + f
+	print("Writing file: " + f)
 
 	p = open(f, 'w');
 	if not p:
@@ -128,7 +128,7 @@ def tcm_mod_build_iSCSI_include(fabric_mod_dir_var, fabric_mod_name):
 	buf = ""
 
 	f = fabric_mod_dir_var + "/" + fabric_mod_name + "_base.h"
-	print "Writing file: " + f
+	print("Writing file: " + f)
 
 	p = open(f, 'w');
 	if not p:
@@ -172,7 +172,7 @@ def tcm_mod_build_base_includes(proto_ident, fabric_mod_dir_val, fabric_mod_name
 	elif proto_ident == "iSCSI":
 		tcm_mod_build_iSCSI_include(fabric_mod_dir_val, fabric_mod_name)
 	else:
-		print "Unsupported proto_ident: " + proto_ident
+		print("Unsupported proto_ident: " + proto_ident)
 		sys.exit(1)
 
 	return
@@ -181,7 +181,7 @@ def tcm_mod_build_configfs(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	buf = ""
 
 	f = fabric_mod_dir_var + "/" + fabric_mod_name + "_configfs.c"
-	print "Writing file: " + f
+	print("Writing file: " + f)
 
         p = open(f, 'w');
         if not p:
@@ -340,7 +340,7 @@ def tcm_mod_scan_fabric_ops(tcm_dir):
 
 	fabric_ops_api = tcm_dir + "include/target/target_core_fabric.h"
 
-	print "Using tcm_mod_scan_fabric_ops: " + fabric_ops_api
+	print("Using tcm_mod_scan_fabric_ops: " + fabric_ops_api)
 	process_fo = 0;
 
 	p = open(fabric_ops_api, 'r')
@@ -376,14 +376,14 @@ def tcm_mod_dump_fabric_ops(proto_ident, fabric_mod_dir_var, fabric_mod_name):
 	bufi = ""
 
 	f = fabric_mod_dir_var + "/" + fabric_mod_name + "_fabric.c"
-	print "Writing file: " + f
+	print("Writing file: " + f)
 
 	p = open(f, 'w')
 	if not p:
 		tcm_mod_err("Unable to open file: " + f)
 
 	fi = fabric_mod_dir_var + "/" + fabric_mod_name + "_fabric.h"
-	print "Writing file: " + fi
+	print("Writing file: " + fi)
 
 	pi = open(fi, 'w')
 	if not pi:
@@ -545,7 +545,7 @@ def tcm_mod_build_kbuild(fabric_mod_dir_var, fabric_mod_name):
 
 	buf = ""
 	f = fabric_mod_dir_var + "/Makefile"
-	print "Writing file: " + f
+	print("Writing file: " + f)
 
 	p = open(f, 'w')
 	if not p:
@@ -566,7 +566,7 @@ def tcm_mod_build_kconfig(fabric_mod_dir_var, fabric_mod_name):
 
 	buf = ""
 	f = fabric_mod_dir_var + "/Kconfig"
-	print "Writing file: " + f
+	print("Writing file: " + f)
 
 	p = open(f, 'w')
 	if not p:
@@ -611,20 +611,20 @@ def main(modname, proto_ident):
 
 	tcm_dir = os.getcwd();
 	tcm_dir += "/../../"
-	print "tcm_dir: " + tcm_dir
+	print("tcm_dir: " + tcm_dir)
 	fabric_mod_name = modname
 	fabric_mod_dir = tcm_dir + "drivers/target/" + fabric_mod_name
-	print "Set fabric_mod_name: " + fabric_mod_name
-	print "Set fabric_mod_dir: " + fabric_mod_dir
-	print "Using proto_ident: " + proto_ident
+	print("Set fabric_mod_name: " + fabric_mod_name)
+	print("Set fabric_mod_dir: " + fabric_mod_dir)
+	print("Using proto_ident: " + proto_ident)
 
 	if proto_ident != "FC" and proto_ident != "SAS" and proto_ident != "iSCSI":
-		print "Unsupported proto_ident: " + proto_ident
+		print("Unsupported proto_ident: " + proto_ident)
 		sys.exit(1)
 
 	ret = tcm_mod_create_module_subdir(fabric_mod_dir)
 	if ret:
-		print "tcm_mod_create_module_subdir() failed because module already exists!"
+		print("tcm_mod_create_module_subdir() failed because module already exists!")
 		sys.exit(1)
 
 	tcm_mod_build_base_includes(proto_ident, fabric_mod_dir, fabric_mod_name)
@@ -634,11 +634,11 @@ def main(modname, proto_ident):
 	tcm_mod_build_kbuild(fabric_mod_dir, fabric_mod_name)
 	tcm_mod_build_kconfig(fabric_mod_dir, fabric_mod_name)
 
-	input = raw_input("Would you like to add " + fabric_mod_name + " to drivers/target/Makefile..? [yes,no]: ")
+	input = input("Would you like to add " + fabric_mod_name + " to drivers/target/Makefile..? [yes,no]: ")
 	if input == "yes" or input == "y":
 		tcm_mod_add_kbuild(tcm_dir, fabric_mod_name)
 
-	input = raw_input("Would you like to add " + fabric_mod_name + " to drivers/target/Kconfig..? [yes,no]: ")
+	input = input("Would you like to add " + fabric_mod_name + " to drivers/target/Kconfig..? [yes,no]: ")
 	if input == "yes" or input == "y":
 		tcm_mod_add_kconfig(tcm_dir, fabric_mod_name)
 
@@ -655,7 +655,7 @@ parser.add_option('-p', '--protoident', help='Protocol Ident', dest='protoident'
 mandatories = ['modname', 'protoident']
 for m in mandatories:
 	if not opts.__dict__[m]:
-		print "mandatory option is missing\n"
+		print("mandatory option is missing\n")
 		parser.print_help()
 		exit(-1)
 

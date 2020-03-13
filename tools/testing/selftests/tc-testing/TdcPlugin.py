@@ -3,47 +3,47 @@
 class TdcPlugin:
     def __init__(self):
         super().__init__()
-        print(' -- {}.__init__'.format(self.sub_class))
+        print((' -- {}.__init__'.format(self.sub_class)))
 
     def pre_suite(self, testcount, testidlist):
         '''run commands before test_runner goes into a test loop'''
         self.testcount = testcount
         self.testidlist = testidlist
         if self.args.verbose > 1:
-            print(' -- {}.pre_suite'.format(self.sub_class))
+            print((' -- {}.pre_suite'.format(self.sub_class)))
 
     def post_suite(self, index):
         '''run commands after test_runner completes the test loop
         index is the last ordinal number of test that was attempted'''
         if self.args.verbose > 1:
-            print(' -- {}.post_suite'.format(self.sub_class))
+            print((' -- {}.post_suite'.format(self.sub_class)))
 
     def pre_case(self, test_ordinal, testid):
         '''run commands before test_runner does one test'''
         if self.args.verbose > 1:
-            print(' -- {}.pre_case'.format(self.sub_class))
+            print((' -- {}.pre_case'.format(self.sub_class)))
         self.args.testid = testid
         self.args.test_ordinal = test_ordinal
 
     def post_case(self):
         '''run commands after test_runner does one test'''
         if self.args.verbose > 1:
-            print(' -- {}.post_case'.format(self.sub_class))
+            print((' -- {}.post_case'.format(self.sub_class)))
 
     def pre_execute(self):
         '''run command before test-runner does the execute step'''
         if self.args.verbose > 1:
-            print(' -- {}.pre_execute'.format(self.sub_class))
+            print((' -- {}.pre_execute'.format(self.sub_class)))
 
     def post_execute(self):
         '''run command after test-runner does the execute step'''
         if self.args.verbose > 1:
-            print(' -- {}.post_execute'.format(self.sub_class))
+            print((' -- {}.post_execute'.format(self.sub_class)))
 
     def adjust_command(self, stage, command):
         '''adjust the command'''
         if self.args.verbose > 1:
-            print(' -- {}.adjust_command {}'.format(self.sub_class, stage))
+            print((' -- {}.adjust_command {}'.format(self.sub_class, stage)))
 
         # if stage == 'pre':
         #     pass
@@ -71,4 +71,4 @@ class TdcPlugin:
         '''Check that the args are set correctly'''
         self.args = args
         if self.args.verbose > 1:
-            print(' -- {}.check_args'.format(self.sub_class))
+            print((' -- {}.check_args'.format(self.sub_class)))

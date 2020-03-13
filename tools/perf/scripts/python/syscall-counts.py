@@ -28,7 +28,7 @@ if len(sys.argv) > 1:
 syscalls = autodict()
 
 def trace_begin():
-	print "Press control+C to stop and show the summary"
+	print("Press control+C to stop and show the summary")
 
 def trace_end():
 	print_syscall_totals()
@@ -51,14 +51,14 @@ def syscalls__sys_enter(event_name, context, common_cpu,
 
 def print_syscall_totals():
     if for_comm is not None:
-	    print "\nsyscall events for %s:\n\n" % (for_comm),
+	    print("\nsyscall events for %s:\n\n" % (for_comm), end=' ')
     else:
-	    print "\nsyscall events:\n\n",
+	    print("\nsyscall events:\n\n", end=' ')
 
-    print "%-40s  %10s\n" % ("event", "count"),
-    print "%-40s  %10s\n" % ("----------------------------------------", \
-                                 "-----------"),
+    print("%-40s  %10s\n" % ("event", "count"), end=' ')
+    print("%-40s  %10s\n" % ("----------------------------------------", \
+                                 "-----------"), end=' ')
 
-    for id, val in sorted(syscalls.iteritems(), key = lambda(k, v): (v, k), \
+    for id, val in sorted(iter(syscalls.items()), key = lambda k_v: (k_v[1], k_v[0]), \
 				  reverse = True):
-	    print "%-40s  %10d\n" % (syscall_name(id), val),
+	    print("%-40s  %10d\n" % (syscall_name(id), val), end=' ')
