@@ -28,6 +28,7 @@ struct android_fwdata_state {
 	struct kobject *vendor_kobj;
 	struct kobject *product_kobj;
 	struct kobject *odm_kobj;
+    struct kobject *config_kobj;
 };
 
 static struct android_fwdata_state state;
@@ -61,7 +62,9 @@ static ssize_t property_show(struct kobject *kobj, struct kobj_attribute *attr,
 		prefix = "android.fstab.product";
 	} else if (kobj == state.odm_kobj) {
 		prefix = "android.fstab.odm";
-	} else {
+	} else if (kobj == state.config_kobj) {
+		prefix = "android.fstab.config";
+    } else {
 		pr_err("%s: Unexpected folder\n", __func__);
 		return -EINVAL;
 	}
@@ -95,6 +98,7 @@ static DT_SIMPLE_ATTR(system, compatible);
 static DT_SIMPLE_ATTR(vendor, compatible);
 static DT_SIMPLE_ATTR(product, compatible);
 static DT_SIMPLE_ATTR(odm, compatible);
+static DT_SIMPLE_ATTR(config, compatible);
 
 static DT_SIMPLE_ATTR(vbmeta, parts);
 
@@ -127,6 +131,10 @@ static DT_SIMPLE_ATTR(odm, dev);
 static DT_SIMPLE_ATTR(odm, type);
 static DT_SIMPLE_ATTR(odm, mnt_flags);
 static DT_SIMPLE_ATTR(odm, fsmgr_flags);
+static DT_SIMPLE_ATTR(config, dev);
+static DT_SIMPLE_ATTR(config, type);
+static DT_SIMPLE_ATTR(config, mnt_flags);
+static DT_SIMPLE_ATTR(config, fsmgr_flags);
 
 static struct attribute *system_attrs[] = {
 	&system_compatible_attr.attr,
@@ -178,6 +186,19 @@ static struct attribute *odm_attrs[] = {
 
 static struct attribute_group odm_group = {
 	.attrs = odm_attrs,
+};
+
+static struct attribute *config_attrs[] = {
+	&config_compatible_attr.attr,
+	&config_dev_attr.attr,
+	&config_type_attr.attr,
+	&config_mnt_flags_attr.attr,
+	&config_fsmgr_flags_attr.attr,
+	NULL,
+};
+
+static struct attribute_group config_group = {
+	.attrs = config_attrs,
 };
 
 static struct kobject *create_folder(struct kobject *parent, const char *name)
@@ -258,6 +279,11 @@ static void remove_folder_with_files(struct kobject *kobj,
 
 static void clean_up(void)
 {
+	if (state.config_kobj) {
+		/* Delete <sysfs_device>/properties/android/fstab/vendor/ */
+		remove_folder_with_files(state.config_kobj, &config_group);
+		state.config_kobj = NULL;
+	}
 	if (state.vendor_kobj) {
 		/* Delete <sysfs_device>/properties/android/fstab/vendor/ */
 		remove_folder_with_files(state.vendor_kobj, &vendor_group);
@@ -300,6 +326,32 @@ static void clean_up(void)
 		kobject_put(state.properties_kobj);
 		state.properties_kobj = NULL;
 	}
+}
+
+static struct kobject *create_folder_and_sub_with_files(struct kobject *parent,
+						const char *name,
+						const char *folder,
+						struct attribute_group *group)
+{
+	struct kobject *kobj;
+
+	kobj = create_folder(parent, name);
+	if (kobj) {
+		/* Note: Usually drivers should use device_add_groups() rather
+		 * than sysfs_create_group(), but the former does not support
+		 * creating the folder in a subfolder.
+		 */
+		int ret;
+
+		ret = sysfs_create_group(kobj, group);
+		if (ret) {
+			pr_err("%s: Failed to create %s/*: ret=%d\n", __func__,
+			       name, ret);
+			kobject_put(kobj);
+			return NULL;
+		}
+	}
+	return kobj;
 }
 
 static int android_fwdata_probe(struct platform_device *pdev)
@@ -368,6 +420,14 @@ static int android_fwdata_probe(struct platform_device *pdev)
 							     "odm",
 							     &odm_group);
 		if (!state.odm_kobj)
+			goto out;
+	}
+	if (device_property_present(state.dev, "android.fstab.config.dev")) {
+		/* Firmware contains fstab config for early mount of /vendor/oem_config */
+		state.config_kobj = create_folder_with_files(state.fstab_kobj,
+							     "vendor/oem_config",
+							     &config_group);
+		if (!state.config_kobj)
 			goto out;
 	}
 	return 0;
